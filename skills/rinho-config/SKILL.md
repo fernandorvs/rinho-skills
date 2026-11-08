@@ -3,7 +3,7 @@ name: rinho-config
 description: Use when configuring Rinho GPS trackers (Zero IoT, Spider IoT, Smart IoT) - writing or fixing rules (SRL), timers, speed limits, outputs, alarms, reports or any >S...< command block, explaining an existing Rinho configuration, or fixing an import error in the Code mode of config.rinho.com.ar. Also for Spanish/Portuguese requests like "configurar equipo Rinho", "armar una regla", "corte de motor", "exceso de velocidad", "ralentí", "botón de pánico", "configurar rastreador", "bloqueio".
 license: Proprietary. Free to use for configuring Rinho devices.
 metadata:
-  version: "1.5.0"
+  version: "1.6.0"
   author: Rinho Telematics
   homepage: https://config.rinho.com.ar/skills/index.html
 ---
@@ -20,8 +20,11 @@ Reply in the user's language. Commands themselves are never translated.
 
 1. **Never invent commands, fields or signals.** Use only what is in the public docs, in
    `references/` or in a recipe. If you can't find it, say so and point to the docs.
-2. **Never send anything to a device yourself.** You produce text. The user loads it in the
-   configurator, reviews it and sends it.
+2. **You produce text; the user decides what reaches the device.** By default they load the block
+   in the configurator, review it and send it. Send it yourself **only** when the user explicitly
+   asks, the device is on their PC by USB and they named the port, and only through
+   `rinho-serial send` (see "Sending over the serial port"): it re-validates against the real
+   device, backs up and stops at the first error. Never through their platform or SMS.
 3. **Never hand over a block that has not passed the validator** (see Validate). If you could not
    run it, say so explicitly and tell the user the import in Code mode will be the check.
 4. **Outputs are safety-critical.** If the block drives an output (engine cut / immobilizer,
@@ -94,7 +97,7 @@ device shows one (features of a release can depend on it). Add `--offline` (or s
 GET of version.json without any user data. `explain` reads one **configuration** line; an action
 such as `STD10R00120` is valid inside `ACC={...}` but is not a configuration line on its own.
 
-`scripts/rinho.mjs` is next to this file: one tool for validating, explaining and (in the `rinho-zones` skill) building zone files. The output is JSON. Exit code `0` means no rejected lines.
+`scripts/rinho.mjs` is next to this file: one tool for validating, explaining, (in the `rinho-zones` skill) building zone files and, with the serial driver, talking to the device. The output is JSON. Exit code `0` means no rejected lines.
 
 If you cannot run code but can make HTTP requests:
 
@@ -132,6 +135,61 @@ any error. Ask them to paste the error back to you.
 4. How to test it (e.g. "turn ignition on with the vehicle stopped and wait 5 minutes").
 5. Safety notes if it touches outputs.
 
+## Sending over the serial port (only when the user asks)
+
+The default is the configurator. Send the block yourself **only if all of these hold**: the user
+explicitly asked you to send it, the device is on their PC by USB, and they told you the port
+(`COM4`, `/dev/ttyUSB0`, `/dev/tty.usbserial-…`). Then use the `rinho-serial` package, which is
+this same `rinho.mjs` plus the serial driver (Node.js 18+; `npx` downloads it once):
+
+```
+npx -y rinho-serial query COM4 QVR                  # model, firmware and id of the device on that port
+npx -y rinho-serial send COM4 config.txt            # the validated block
+```
+
+(`scripts/rinho.mjs send …` is the same program and works when the `serialport` driver is
+installed next to it; if it answers `SERIAL_UNAVAILABLE`, use `npx -y rinho-serial`.)
+
+What `send` does, so you can tell the user: opens **only that port** (115200 8N1, DTR/RTS low so
+the board does not reset), reads `>QVR<`, **re-validates the file for that model and firmware**,
+refuses to continue if any line is rejected or needs a newer firmware, queries the current value of
+every resource the block touches and writes a backup file, sends one line at a time waiting for
+each answer, **stops at the first line without answer or with an error**, reads everything back and
+logs the session (passwords masked). It refuses actions (`SRL**D`, `SSS…`, `SZMODE…`) and
+password, factory or firmware commands, whatever the file says: actions go through `run` (below).
+
+Read its JSON:
+- `OUTPUTS_NEED_CONFIRMATION`: the block drives an output (engine cut, siren, buzzer, relay). Tell
+  the user exactly which lines, what they switch and when, ask for an explicit yes with the vehicle
+  stopped, and only then run again with `--outputs-confirmed`.
+- `NO_REPLY`: nothing answered `>QVR<`. Check the port name with the user (never try other ports),
+  that the configurator's monitor is closed, the cable. A password-protected device needs the
+  password in the `RINHO_PASSWORD` environment variable, set by the user; **never ask them to paste
+  it in the chat**.
+- `VALIDATION_FAILED` / `FIRMWARE_TOO_OLD`: fix the block as in Step 4 and run again.
+- `ok: true`: report the lines written, the `backup` file and the `readback` before/after.
+- `stoppedAt`: say which line failed, what was written before it (it stays on the device) and that
+  the previous values are in the backup file.
+
+
+**Actions and anything `send` refuses** (`SSSXP0111` to test an output, `SRL05D` to erase a rule,
+`SCXDLE`, `SRESET`, `SZMODE1`, a `G…` report…) go through `run`, which sends commands exactly as
+given, one at a time, without validation or backup:
+
+```
+npx -y rinho-serial run COM4 ">SSSXP0011<" ">SRL50D<" --confirmed
+npx -y rinho-serial run COM4 --file actions.txt --confirmed
+```
+
+Without `--confirmed` it only lists what it would send: show the user that list, say what each
+command does on the device, and pass the flag only after their explicit yes, every time. Password,
+factory-reset and firmware commands additionally need `--unsafe`: you never produce those (rule 5),
+so you never pass it; if the user insists on sending one themselves, explain what it does and let
+them run it. `run` stops at the first command without answer (the device rejected it) or with an
+error, and reports what was sent and what was not.
+
+Listing ports (`npx -y rinho-serial ports`) opens none and is fine to help the user find theirs.
+
 ## Explaining an existing config
 
 If the user pastes a config and asks what it does: run `explain` on each line (or validate the
@@ -140,7 +198,7 @@ TD03 (10 min); when it expires, send report CQ00 and go to low power".
 
 ## Version check
 
-This skill is version 1.5.0. Once per conversation, if you can fetch URLs, GET
+This skill is version 1.6.0. Once per conversation, if you can fetch URLs, GET
 https://config.rinho.com.ar/skills/version.json and compare `skills["rinho-config"].version`.
 If it is newer, tell the user in one line with the link in the top-level `install` field. If the fetch fails,
 continue silently. Never download or replace skill files yourself.

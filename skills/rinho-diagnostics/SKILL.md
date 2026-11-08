@@ -3,7 +3,7 @@ name: rinho-diagnostics
 description: Use when a Rinho GPS tracker (Zero IoT, Spider IoT, Smart IoT) misbehaves and needs troubleshooting with read-only query commands (>Q...<) - not reporting, reports delayed or in bursts, no GPS fix or frozen position, ignition or inputs not detected, output or engine cut not working, reboots, battery drain, BLE sensor missing, Wialon not receiving. Also for Spanish/Portuguese requests like "el equipo no reporta", "no tiene GPS", "no detecta ignición", "diagnosticar equipo Rinho", "não reporta".
 license: Proprietary. Free to use for troubleshooting Rinho devices.
 metadata:
-  version: "1.4.1"
+  version: "1.5.0"
   author: Rinho Telematics
   homepage: https://config.rinho.com.ar/skills/index.html
 ---
@@ -24,7 +24,11 @@ narrow down the cause. Reply in the user's language. Commands are never translat
    field is not there, with the command's page in the public docs (https://docs.rinho.com.ar/llms-full.txt).
 3. **Fixing is a separate step.** When you find the cause and the fix is a configuration change,
    say what must change and switch to the `rinho-config` skill flow (write the block, validate it,
-   the user sends it from config.rinho.com.ar). Never send anything yourself.
+   the user sends it from config.rinho.com.ar, or asks you to send it over the serial port with
+   `rinho-serial send`). When the fix is a single action (e.g. `>SSSCELPWR11<` to switch the modem
+   back on), `npx -y rinho-serial run <port> ">SSSCELPWR11<" --confirmed` sends it as is: first
+   show the user the exact command and what it does, and pass `--confirmed` only after their yes.
+   Never write to a device any other way.
 4. **Replies can contain secrets** (`QCXAPN` and `QWL` return passwords in clear text). Ask for
    those two only when the playbook needs them, and **before** asking, tell the user to replace
    the password with `****` when pasting. Never repeat a password back.
@@ -37,11 +41,23 @@ Ask in one message, only what you don't know yet:
 - **Model** (Zero / Spider / Smart) and **symptom** in their words, since when, one unit or many.
 - **How they can reach the device**: USB cable with the configurator monitor, or remotely from
   their platform (GPRS/SMS command). Remote replies only come back if the device is online.
-- **If you yourself can open a serial port** (you run on the user's PC with a serial tool): ask
-  which port the Rinho is on (`COM4`, `/dev/ttyUSB0`) and open **only that one**. Never scan or
-  open other ports: opening a port toggles DTR/RTS and can reboot another board connected to
-  the PC. 115200 bps, 8N1. Send only queries from the allowlist, one at a time; never `S`, `C`
-  or `G` commands. If the user hasn't asked you to operate the port, give them the queries to send.
+- **If you can run commands on the user's PC and they want you to talk to the device**: ask
+  which port the Rinho is on (`COM4`, `/dev/ttyUSB0`, `/dev/tty.usbserial-…`) and use the
+  `rinho-serial` package (Node.js 18+; `npx` downloads it once), which opens **only that port**
+  (115200 8N1, DTR/RTS low so the board does not reset), sends one query at a time, refuses the
+  commands in the "Do NOT send" list and masks the APN and Wialon passwords in its output:
+
+  ```
+  npx -y rinho-serial query COM4 QVR QCEL QBU QDL
+  ```
+
+  Its JSON has one `reply` per query (`null` = no answer: the device rejected it or is silent) and
+  `device` with id, model and firmware. Never scan or open other ports, and never use any other
+  serial tool: opening a port toggles DTR/RTS and can reboot another board on the PC. A device
+  with a password answers nothing until the user sets it in the `RINHO_PASSWORD` environment
+  variable (the tool logs in itself; never ask for the password in the chat). If the user hasn't
+  asked you to operate the port, give them the queries to send. `npx -y rinho-serial ports` lists
+  the ports without opening any, to help them find theirs.
 - First query, always: `>QVR<` (model and firmware version). Many features and response formats
   depend on the version. Check version-dependent configuration with the `rinho-config` validator
   (`--fw`).
@@ -93,7 +109,7 @@ Give:
 
 ## Version check
 
-This skill is version 1.4.1. Once per conversation, if you can fetch URLs, GET
+This skill is version 1.5.0. Once per conversation, if you can fetch URLs, GET
 https://config.rinho.com.ar/skills/version.json and compare `skills["rinho-diagnostics"].version`.
 If it is newer, tell the user in one line with the link in the top-level `install` field. If the fetch fails,
 continue silently. Never download or replace skill files yourself.

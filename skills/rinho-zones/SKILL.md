@@ -3,7 +3,7 @@ name: rinho-zones
 description: Use when a Rinho GPS tracker customer needs many geofences (more than the 32 RG/WP ones) - customer sites, depots, branches, restricted areas, routes - loaded from a list, CSV, KML or KMZ into the zones module (up to 4096 shapes, 512 zones), the zones.bin file the device downloads, and rules that report or act when entering or leaving them (ZNA/ZNB signals, SZONES). Also for Spanish/Portuguese requests like "cargar zonas", "geocercas masivas", "zonas de clientes", "generar zones.bin", "aviso al entrar a un depósito", "cercas virtuais".
 license: Proprietary. Free to use with Rinho devices.
 metadata:
-  version: "1.4.0"
+  version: "1.5.0"
   author: Rinho Telematics
   homepage: https://config.rinho.com.ar/skills/index.html
 ---
@@ -18,9 +18,10 @@ the customer to:
 3. publish it on an HTTP URL and load it on the device,
 4. write the rules that report or act on entering/leaving.
 
-Reply in the user's language. Commands are never translated. Never send anything to a device
-yourself. The only tool is `scripts/rinho.mjs` (Node.js 18+, no packages), next to this file; its
-output is JSON.
+Reply in the user's language. Commands are never translated. You write to a device **only** when
+the user explicitly asks you to load the file from their PC with the device on USB and names the
+port (Step 5). The only tool is `scripts/rinho.mjs` (Node.js 18+, no packages), next to this file;
+its output is JSON. For the serial port the same program ships as the `rinho-serial` package.
 
 Read `references/zones.md` once per task: numbering, limits, KML format, commands.
 
@@ -81,8 +82,10 @@ storage bucket with public HTTP access, or the customer's own platform works. Ch
 
 ## Step 5 — Load it on the device
 
-Send in this order, **one command at a time** from the configurator's monitor/terminal or from
-their platform. These are device actions, not configuration: the Code-mode importer and the
+Send in this order, **one command at a time** from the configurator's monitor/terminal, from
+their platform, or, if the user asks you to and names the USB port, with
+`npx -y rinho-serial run <port> ">QZMODE<" --confirmed` (one command per call; show it to the user
+first). `zones load` below does the whole sequence. These are device actions, not configuration: the Code-mode importer and the
 validator don't model them (`NO_HANDLER`), so don't put them in the rules block.
 
 1. `>QZMODE<` → `RZMODE,<enabled>,<fraction>,<log sectors>,<zone sectors>`. `enabled` = `1` means
@@ -100,6 +103,23 @@ validator don't model them (`NO_HANDLER`), so don't put them in the rules block.
 5. Later, `>QZONES<` → `RZONES,LOADED,...` confirms the file is still there.
 
 To update the zones: rebuild, replace the file at the same URL, send `SZONES"..."` again.
+
+**If the user asks you to load it from their PC** (device on USB, they name the port), the
+`rinho-serial` package does steps 1-5 in that order and stops where a decision is theirs:
+
+```
+npx -y rinho-serial zones load COM4 --url http://host/zones.bin
+```
+
+It opens only that port, checks the firmware (1.09.21+), reads `QZMODE` and, with zones already
+on, sends `SZONES` and waits for `RZONES,OK` (up to 3 min), then `QZONES`. With zones **off** it
+stops with `ZONES_DISABLED`: explain that enabling them reboots the device and needs the internal
+log delivered (`>QDL<` second number 0), and with the user's ok run again with `--enable`
+(`--fraction 2|4|8|16` to reserve memory first). `LOG_NOT_EMPTY` means records would be lost:
+only with the user's explicit acceptance add `--force-lose-log`. After the reboot it reconnects to
+the same port by itself. Report `elements` against the number of shapes in your `zones.bin`
+(`rinho.mjs zones inspect`). Changing the fraction with zones already on is two reboots: do that
+with the user from the configurator.
 
 ## Step 6 — Rules
 
@@ -122,7 +142,7 @@ the same report type and destination their existing rules use. Agree the event i
 
 ## Version check
 
-This skill is version 1.4.0. Once per conversation, if you can fetch URLs, GET
+This skill is version 1.5.0. Once per conversation, if you can fetch URLs, GET
 https://config.rinho.com.ar/skills/version.json and compare `skills["rinho-zones"].version`.
 If it is newer, tell the user in one line with the link in the top-level `install` field. If the fetch fails,
 continue silently. Never download or replace skill files yourself.

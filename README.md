@@ -8,12 +8,15 @@ configurator** at [config.rinho.com.ar](https://config.rinho.com.ar).
 
 | Skill | Version | What it does |
 |---|---|---|
-| `rinho-config` | 1.5.0 | Turns a request ("buzzer above 110 km/h for 10 s") into a validated block of commands to paste into the configurator's Code mode. 31 tested recipes, every public command with its syntax and minimum firmware. |
-| `rinho-diagnostics` | 1.4.1 | Troubleshoots a device (not reporting, no GPS, inputs, outputs, battery, BLE) with read-only query commands and playbooks by symptom. |
-| `rinho-zones` | 1.4.0 | Builds the mass-geofence file (`zones.bin`, up to 4096 shapes) from a CSV, KML or KMZ, explains how to load it, and writes the enter/leave rules. |
+| `rinho-config` | 1.6.0 | Turns a request ("buzzer above 110 km/h for 10 s") into a validated block of commands to paste into the configurator's Code mode. 31 tested recipes, every public command with its syntax and minimum firmware. |
+| `rinho-diagnostics` | 1.5.0 | Troubleshoots a device (not reporting, no GPS, inputs, outputs, battery, BLE) with read-only query commands and playbooks by symptom. |
+| `rinho-zones` | 1.5.0 | Builds the mass-geofence file (`zones.bin`, up to 4096 shapes) from a CSV, KML or KMZ, explains how to load it, and writes the enter/leave rules. |
 
-The skills never send anything to a device: they produce text you review and send from the
-configurator. Replies are in your language.
+The skills produce text you review and send from the configurator. They write to a device only
+when you explicitly ask them to, with the device on your PC's USB and the port you name, through
+the [`rinho-serial`](https://www.npmjs.com/package/rinho-serial) package (`npx -y rinho-serial`):
+it re-validates for the real model and firmware, backs up what it touches, sends one line at a
+time and stops at the first error. Replies are in your language.
 
 ## Install
 
@@ -39,9 +42,10 @@ Settings → Capabilities → Skills.
 **Manual**: copy `skills/<name>/` into your agent's skills folder (`.claude/skills/`,
 `.agents/skills/`, …).
 
-The skills ship one tool, `scripts/rinho.mjs` (Node.js 18+, no dependencies; build `c6e19495796f`):
-`validate`, `explain`, `zones from-csv|assign|list|build|inspect`. Agents that can't run scripts
-use the same validator over HTTP: `POST https://config.rinho.com.ar/api/validate`.
+The skills ship one tool, `scripts/rinho.mjs` (Node.js 18+, no dependencies; build `fe00d56c1440`):
+`validate`, `explain`, `zones from-csv|assign|list|build|inspect`. The same file plus the serial
+driver is the npm package `rinho-serial` (`ports`, `query`, `send`, `run`, `zones load`). Agents that
+can't run scripts use the same validator over HTTP: `POST https://config.rinho.com.ar/api/validate`.
 
 ## This repository is a mirror
 

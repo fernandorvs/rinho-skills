@@ -9,6 +9,9 @@ the command was sent with a message number (platforms do; the configurator's mon
 Formats below were checked against the firmware (verified on a Zero IoT 1.09.28.T63 on 2026-11-08).
 If a reply doesn't match, trust the device and tell the user what it answered.
 
+`rinho-serial query` (the serial tool of the skills) only accepts `Q…` commands and refuses the
+ones in "Do NOT send"; it masks the passwords `QCXAPN` and `QWL` return.
+
 ## Allowlist (safe to send while diagnosing)
 
 | Query | Reply | Fields / meaning |

@@ -1,7 +1,7 @@
 {
   "name": "rinho",
   "displayName": "Rinho GPS trackers",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Configure, troubleshoot and load zones on Rinho GPS trackers (Zero, Spider, Smart) with the official validator. Skills: rinho-config, rinho-diagnostics, rinho-zones.",
   "author": {
     "name": "Rinho Telematics",
