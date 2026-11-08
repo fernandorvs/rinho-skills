@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "Official skills for Rinho GPS trackers",
-    "version": "1.4.0"
+    "version": "1.5.0"
   },
   "plugins": [
     {
       "name": "rinho",
       "source": "./",
       "description": "Configure, troubleshoot and load zones on Rinho GPS trackers (Zero, Spider, Smart) with the official validator. Skills: rinho-config, rinho-diagnostics, rinho-zones.",
-      "version": "1.4.0",
+      "version": "1.5.0",
       "category": "iot",
       "tags": [
         "rinho",

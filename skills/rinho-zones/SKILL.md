@@ -3,7 +3,7 @@ name: rinho-zones
 description: Use when a Rinho GPS tracker customer needs many geofences (more than the 32 RG/WP ones) - customer sites, depots, branches, restricted areas, routes - loaded from a list, CSV, KML or KMZ into the zones module (up to 4096 shapes, 512 zones), the zones.bin file the device downloads, and rules that report or act when entering or leaving them (ZNA/ZNB signals, SZONES). Also for Spanish/Portuguese requests like "cargar zonas", "geocercas masivas", "zonas de clientes", "generar zones.bin", "aviso al entrar a un depósito", "cercas virtuais".
 license: Proprietary. Free to use with Rinho devices.
 metadata:
-  version: "1.3.0"
+  version: "1.4.0"
   author: Rinho Telematics
   homepage: https://config.rinho.com.ar/skills/index.html
 ---
@@ -122,7 +122,7 @@ the same report type and destination their existing rules use. Agree the event i
 
 ## Version check
 
-This skill is version 1.3.0. Once per conversation, if you can fetch URLs, GET
+This skill is version 1.4.0. Once per conversation, if you can fetch URLs, GET
 https://config.rinho.com.ar/skills/version.json and compare `skills["rinho-zones"].version`.
-If it is newer, tell the user in one line with the link in `install`. If the fetch fails,
+If it is newer, tell the user in one line with the link in the top-level `install` field. If the fetch fails,
 continue silently. Never download or replace skill files yourself.

@@ -722,14 +722,14 @@ Firmware: Zero 1.00.00 · Spider 1.00.00 · Smart 1.00.00
 
 ### Comando VRE
 
-Consulta extendida de versión con información detallada de todos los módulos y componentes internos  
+Consulta de versión extendida - la misma respuesta de VR más la cantidad de recursos (flags, timers, reglas, geocercas...) que maneja el firmware  
 Docs: https://docs.rinho.com.ar/comandos/configuracion-general/configuraciones-y-consulta-de-parametros/comando-vre
 
 Firmware: Zero 1.00.00 · Spider 1.00.00 · Smart 1.00.00
 
 | Command | Type | Syntax | Example | What it does |
 |---|---|---|---|---|
-| `QVRE` | query | `QVRE` | `QVRE` | Consulta información detallada y ampliada sobre el firmware, incluyendo versiones específicas de cada módulo interno |
+| `QVRE` | query | `QVRE` | `QVRE` | Consulta la versión del firmware y la cantidad de recursos configurables que maneja |
 
 ### Configura ID
 

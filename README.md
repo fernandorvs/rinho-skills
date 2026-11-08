@@ -8,9 +8,9 @@ configurator** at [config.rinho.com.ar](https://config.rinho.com.ar).
 
 | Skill | Version | What it does |
 |---|---|---|
-| `rinho-config` | 1.4.0 | Turns a request ("buzzer above 110 km/h for 10 s") into a validated block of commands to paste into the configurator's Code mode. 31 tested recipes, every public command with its syntax and minimum firmware. |
-| `rinho-diagnostics` | 1.3.0 | Troubleshoots a device (not reporting, no GPS, inputs, outputs, battery, BLE) with read-only query commands and playbooks by symptom. |
-| `rinho-zones` | 1.3.0 | Builds the mass-geofence file (`zones.bin`, up to 4096 shapes) from a CSV, KML or KMZ, explains how to load it, and writes the enter/leave rules. |
+| `rinho-config` | 1.5.0 | Turns a request ("buzzer above 110 km/h for 10 s") into a validated block of commands to paste into the configurator's Code mode. 31 tested recipes, every public command with its syntax and minimum firmware. |
+| `rinho-diagnostics` | 1.4.0 | Troubleshoots a device (not reporting, no GPS, inputs, outputs, battery, BLE) with read-only query commands and playbooks by symptom. |
+| `rinho-zones` | 1.4.0 | Builds the mass-geofence file (`zones.bin`, up to 4096 shapes) from a CSV, KML or KMZ, explains how to load it, and writes the enter/leave rules. |
 
 The skills never send anything to a device: they produce text you review and send from the
 configurator. Replies are in your language.
@@ -20,8 +20,9 @@ configurator. Replies are in your language.
 **Any agent that supports Agent Skills** (Claude Code, Codex, Cursor, …):
 
 ```bash
-npx skills add fernandorvs/rinho-skills            # pick the skills to install
-npx skills add fernandorvs/rinho-skills --list     # see what's here
+npx skills add fernandorvs/rinho-skills                  # pick the skills to install
+npx skills add fernandorvs/rinho-skills -a claude-code   # for Claude Code (otherwise they land in .agents/skills/, which it doesn't read)
+npx skills add fernandorvs/rinho-skills --list           # see what's here
 ```
 
 **Claude Code** (as a plugin, with updates):

@@ -444,7 +444,7 @@ Sintetiza en un flag U la señal 'el vehículo está dentro de ALGUNA de estas r
 
 | Parameter | Default | Format | Meaning |
 |---|---|---|---|
-| `zonas` | `RG00RG01|` |  | Condición en RPN con la OR de las regiones: RG00RG01\| para dos, RG00RG01\|RG02\| para tres, hasta diez por regla (RG00RG01\|RG02\|…RG09\|). Las regiones se definen aparte con su geometría. |
+| `zonas` | `RG00RG01\|` |  | Condición en RPN con la OR de las regiones: RG00RG01\| para dos, RG00RG01\|RG02\| para tres, hasta diez por regla (RG00RG01\|RG02\|…RG09\|). Las regiones se definen aparte con su geometría. |
 | `ventanaSeg` | `10` | `5d` | Segundos sin estar en ninguna zona antes de bajar el flag (histéresis). |
 | `evEntra` | `20` |  | Evento entrada a zona (dos dígitos, 00-99 para SmartTrack). |
 | `evSale` | `21` |  | Evento salida de zona. |

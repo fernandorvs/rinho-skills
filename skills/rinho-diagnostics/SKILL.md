@@ -3,7 +3,7 @@ name: rinho-diagnostics
 description: Use when a Rinho GPS tracker (Zero IoT, Spider IoT, Smart IoT) misbehaves and needs troubleshooting with read-only query commands (>Q...<) - not reporting, reports delayed or in bursts, no GPS fix or frozen position, ignition or inputs not detected, output or engine cut not working, reboots, battery drain, BLE sensor missing, Wialon not receiving. Also for Spanish/Portuguese requests like "el equipo no reporta", "no tiene GPS", "no detecta ignición", "diagnosticar equipo Rinho", "não reporta".
 license: Proprietary. Free to use for troubleshooting Rinho devices.
 metadata:
-  version: "1.3.0"
+  version: "1.4.0"
   author: Rinho Telematics
   homepage: https://config.rinho.com.ar/skills/index.html
 ---
@@ -37,6 +37,11 @@ Ask in one message, only what you don't know yet:
 - **Model** (Zero / Spider / Smart) and **symptom** in their words, since when, one unit or many.
 - **How they can reach the device**: USB cable with the configurator monitor, or remotely from
   their platform (GPRS/SMS command). Remote replies only come back if the device is online.
+- **If you yourself can open a serial port** (you run on the user's PC with a serial tool): ask
+  which port the Rinho is on (`COM4`, `/dev/ttyUSB0`) and open **only that one**. Never scan or
+  open other ports: opening a port toggles DTR/RTS and can reboot another board connected to
+  the PC. 115200 bps, 8N1. Send only queries from the allowlist, one at a time; never `S`, `C`
+  or `G` commands. If the user hasn't asked you to operate the port, give them the queries to send.
 - First query, always: `>QVR<` (model and firmware version). Many features and response formats
   depend on the version. Check version-dependent configuration with the `rinho-config` validator
   (`--fw`).
@@ -53,8 +58,9 @@ in one code block, then wait for the pasted replies:
 >QDL<
 ```
 
-Replies look like `>RCEL,NOCONN,...;#0012;ID=861234...;*5A<`: the part before the first `;#` is the
-answer, then message number, device ID and checksum.
+Replies look like `>RBUOK00000;ID=861234...;*6E<`: the answer, then `;ID=` and `;*checksum`
+(and `;#<n>` only when the command carried a message number). Formats are in
+`references/commands.md`; when a reply doesn't match, trust the device.
 
 Branch on what you see. Don't ask for everything up front.
 
@@ -62,7 +68,7 @@ Branch on what you see. Don't ask for everything up front.
 
 Give:
 1. **Diagnosis**: most likely cause, quoting the reply that shows it
-   (e.g. "`RBU;GPRS=1250;SMS=0`: 1250 reports are queued and not going out").
+   (e.g. "`RBUOK01250`: 1250 reports are queued and not going out").
 2. **What was ruled out**, with the reply that ruled it out.
 3. **Next action**: a physical check (antenna, SIM, wiring), a config change (go to the
    `rinho-config` flow), or a firmware update. For updates, recommend first
@@ -74,6 +80,8 @@ Give:
 
 ## Common traps
 
+- `QCEL` with an empty status plus `QWIF` connected: the device reports by WiFi and the cellular
+  modem may simply be switched off (`>QSSCELPWR<` → `00`, persisted). Not a WiFi feature: fix it.
 - `RCEL,NOCONN,...` is **normal** (registered, radio idle). Only `SEARCH` and `LIMSRV` indicate a
   registration problem. "Is it reporting?" is answered by `QBU` and `QDL`, not by `QCEL`.
 - A position that doesn't move while parked may be on purpose: `QCXGPS` mode 1 or 2.
@@ -85,7 +93,7 @@ Give:
 
 ## Version check
 
-This skill is version 1.3.0. Once per conversation, if you can fetch URLs, GET
+This skill is version 1.4.0. Once per conversation, if you can fetch URLs, GET
 https://config.rinho.com.ar/skills/version.json and compare `skills["rinho-diagnostics"].version`.
-If it is newer, tell the user in one line with the link in `install`. If the fetch fails,
+If it is newer, tell the user in one line with the link in the top-level `install` field. If the fetch fails,
 continue silently. Never download or replace skill files yourself.

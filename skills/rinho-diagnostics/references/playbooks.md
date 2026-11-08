@@ -6,6 +6,12 @@ Response formats are in `commands.md`.
 ## Not reporting / platform shows it offline
 
 1. `>QVR<` `>QCEL<` `>QBU<` `>QDL<`
+   - `RCEL,,,0,0,,,99,...` (empty status) → the modem never came up since boot. Ask for
+     `>QSSCELPWR<` first: `RSSCELPWR00` = cellular switched off by command, **and it stays off
+     after reboots** (saved in NVS). Fix: the user sends `>SSSCELPWR11<` (a write command: never
+     send it yourself; confirm with them). Seen in the field: a device reporting fine by WiFi with
+     the modem off for months. If `QSSCELPWR` is `11`, then no SIM or a modem failure. Either way,
+     WiFi reporting doesn't make the cellular side optional: it is the backup when WiFi is out of reach.
    - `RCEL,SEARCH` → no cell found: antenna, coverage, SIM seated. Check the cellular LED.
    - `RCEL,LIMSRV` → camped but not registered: SIM rejected, no data plan, operator not allowed.
      Check `>QCOPS<` for a forced 2G/4G or a manual operator.
@@ -16,11 +22,11 @@ Response formats are in `commands.md`.
 2. `>QIP0<` `>QIP1<` `>QCXIP<` (`>QMC<` only if `QCEL` didn't show the MCC)
    - **Most common cause of "stopped reporting" with good signal: the platform moved servers** and
      the device still points to the old host. Ask the platform for host, port and protocol and
-     compare with `RIP0`. `RIPnERR` = that slot is empty (no redundant server).
+     compare with `RIP0`. A bare `RIP1` (nothing after the digit) = that slot is empty (no redundant server).
    - Server IP/port not the platform's → reports go elsewhere. IP0 = main server, IP1 = main
      redundant, IP3 = WiFi-only main (if set, WiFi uses only IP3), IP4/IP5 = backup channel.
    - Protocol letter in `RCXIP` (P = UDP, T = TCP, W = Wialon IPS) must match the platform.
-3. A big `QBU`/`QDL` backlog with good signal → the device produces reports but can't deliver
+3. `RBUOK01312` = 1312 reports queued. A big `QBU`/`QDL` backlog with good signal → the device produces reports but can't deliver
    them. On a bench with ignition off the queue may not grow, so don't wait for growth: judge by the
    backlog and by whether it drains after the fix. Queue growing between two `QBU` queries a minute
    apart (vehicle in use) → same conclusion: connectivity, server not listening, or (TCP/Wialon) server not acknowledging.
