@@ -1,0 +1,22 @@
+{
+  "name": "rinho",
+  "displayName": "Rinho GPS trackers",
+  "version": "1.4.0",
+  "description": "Configure, troubleshoot and load zones on Rinho GPS trackers (Zero, Spider, Smart) with the official validator. Skills: rinho-config, rinho-diagnostics, rinho-zones.",
+  "author": {
+    "name": "Rinho Telematics",
+    "url": "https://www.rinho.com.ar"
+  },
+  "homepage": "https://config.rinho.com.ar/skills/index.html",
+  "repository": "https://github.com/fernandorvs/rinho-skills",
+  "license": "Proprietary. Free to use with Rinho devices.",
+  "keywords": [
+    "rinho",
+    "gps",
+    "tracker",
+    "telematics",
+    "iot",
+    "geofence",
+    "fleet"
+  ]
+}
