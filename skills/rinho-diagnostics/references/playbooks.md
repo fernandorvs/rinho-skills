@@ -12,7 +12,15 @@ Response formats are in `commands.md`.
      send it yourself; confirm with them). Seen in the field: a device reporting fine by WiFi with
      the modem off for months. If `QSSCELPWR` is `11`, then no SIM or a modem failure. Either way,
      WiFi reporting doesn't make the cellular side optional: it is the backup when WiFi is out of reach.
-   - `RCEL,SEARCH` → no cell found: antenna, coverage, SIM seated. Check the cellular LED.
+   - `RCEL,SEARCH` → don't blame the antenna yet: look at `creg`, `cereg` and `roaming` (fields
+     8-10). The status word comes from the modem's cell report and can still say SEARCH while
+     `creg` already reports registered.
+     - `creg` and `cereg` both 0 or 2 → no cell: antenna, coverage, SIM seated; check the cellular LED.
+     - `creg` 5 + `roaming` 1 + `cereg` 0 (e.g. `RCEL,SEARCH,,0,0,,,99,5,0,1,…`) → the device
+       registered only in roaming and never attached to LTE: suspect the SIM (operator, roaming
+       agreement, data plan, suspended line) and ask the user which operator it is before touching
+       configuration or hardware.
+     - `cereg` 3 → registration denied by the operator (SIM or plan).
    - `RCEL,LIMSRV` → camped but not registered: SIM rejected, no data plan, operator not allowed.
      Check `>QCOPS<` for a forced 2G/4G or a manual operator.
    - `RCEL,NOCONN` or `CONNECT` → registered; go on.
