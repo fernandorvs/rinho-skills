@@ -1113,7 +1113,7 @@ Firmware: Spider 1.00.00 · Smart 1.00.00
 | Command | Type | Syntax | Example | What it does |
 |---|---|---|---|---|
 | `SCXXP` | set | `SCXXPaabbbbccccdddd` | `SCXXP00000500010004` | Configura el modo de activación de salidas digitales con soporte de blink y temporización |
-| `QCXXP` | query | `QCXXP` | `QCXXP` | Consulta la configuración de salidas digitales |
+| `QCXXP` | query | `QCXXPaa` | `QCXXP00` | Consulta la configuración de salidas digitales |
 
 ### Comando DT (equipos legacy)
 

@@ -3,7 +3,7 @@ name: rinho-config
 description: Use when configuring Rinho GPS trackers (Zero IoT, Spider IoT, Smart IoT) - writing or fixing rules (SRL), timers, speed limits, outputs, alarms, reports or any >S...< command block, explaining an existing Rinho configuration, or fixing an import error in the Code mode of config.rinho.com.ar. Also for Spanish/Portuguese requests like "configurar equipo Rinho", "armar una regla", "corte de motor", "exceso de velocidad", "ralentí", "botón de pánico", "configurar rastreador", "bloqueio".
 license: Proprietary. Free to use for configuring Rinho devices.
 metadata:
-  version: "1.6.0"
+  version: "1.6.1"
   author: Rinho Telematics
   homepage: https://config.rinho.com.ar/skills/index.html
 ---
@@ -47,7 +47,11 @@ If not already known, ask (one short message):
 - **What is already configured.** Ideally the current config exported from the configurator, so you
   don't overwrite slots in use. If they don't have it, use slots the configurator's own modules don't
   take (rules RL50+, timers TD10+, flags U20+, speed limits VL02+, UV05+), say which you used, and
-  tell them to read the device before importing.
+  tell them to read the device before importing. Those ranges are a convention, not a guarantee:
+  a previous installer may have used them. **If you can read the device** (serial port, below),
+  read `QRL**` first and look at which TD/U/VL/UV/NT each rule references; a timer slot that
+  answers `D` but with a non-zero time, or a flag at `1`, is in use by someone. Pick slots no rule
+  names.
 
 If the user is in a hurry and already gave model and firmware, write the block with those slots and
 state the assumptions; don't block on the rest.
@@ -159,6 +163,9 @@ logs the session (passwords masked). It refuses actions (`SRL**D`, `SSS…`, `SZ
 password, factory or firmware commands, whatever the file says: actions go through `run` (below).
 
 Read its JSON:
+- `readback[]` is the **live** state after writing, not an echo: a timer you sent as `D` can read
+  back `E` or `R` because a rule you just loaded started it. That is the configuration working, not
+  a failed write; say so instead of resending.
 - `OUTPUTS_NEED_CONFIRMATION`: the block drives an output (engine cut, siren, buzzer, relay). Tell
   the user exactly which lines, what they switch and when, ask for an explicit yes with the vehicle
   stopped, and only then run again with `--outputs-confirmed`.
@@ -188,6 +195,22 @@ so you never pass it; if the user insists on sending one themselves, explain wha
 them run it. `run` stops at the first command without answer (the device rejected it) or with an
 error, and reports what was sent and what was not.
 
+**Undoing a send.** Every `send` writes `rinho-backup-<id>-<date>.txt` next to the log: one
+`>S…<` line per touched resource with its previous value, rules first. To put the device back:
+
+```
+npx -y rinho-serial restore COM4 rinho-backup-865413053387568-2026-11-09T00-08-51.txt --confirmed
+```
+
+It sends the lines as they are (no validator, same confirmation as `run`), **rules first and then
+timers and flags**: a rule still active restarts the timer you just restored. Keep that order when
+you clean up by hand too. Resources that were empty go back as `SRLnnD` / `STDnnD…` / `SVLnnD…`:
+`send` refuses those lines (the validator sees no change against an empty config), which is why
+they go through `restore` or `run`. Clearing a slot on purpose is the same: `run`, not `send`.
+
+If your environment blocks the dry run (`run` without `--confirmed` only prints the list, but a
+permission mode may still refuse it), write the list yourself from the file and ask the user.
+
 Listing ports (`npx -y rinho-serial ports`) opens none and is fine to help the user find theirs.
 
 ## Explaining an existing config
@@ -198,7 +221,7 @@ TD03 (10 min); when it expires, send report CQ00 and go to low power".
 
 ## Version check
 
-This skill is version 1.6.0. Once per conversation, if you can fetch URLs, GET
+This skill is version 1.6.1. Once per conversation, if you can fetch URLs, GET
 https://config.rinho.com.ar/skills/version.json and compare `skills["rinho-config"].version`.
 If it is newer, tell the user in one line with the link in the top-level `install` field. If the fetch fails,
 continue silently. Never download or replace skill files yourself.

@@ -3,7 +3,7 @@ name: rinho-diagnostics
 description: Use when a Rinho GPS tracker (Zero IoT, Spider IoT, Smart IoT) misbehaves and needs troubleshooting with read-only query commands (>Q...<) - not reporting, reports delayed or in bursts, no GPS fix or frozen position, ignition or inputs not detected, output or engine cut not working, reboots, battery drain, BLE sensor missing, Wialon not receiving. Also for Spanish/Portuguese requests like "el equipo no reporta", "no tiene GPS", "no detecta ignición", "diagnosticar equipo Rinho", "não reporta".
 license: Proprietary. Free to use for troubleshooting Rinho devices.
 metadata:
-  version: "1.5.0"
+  version: "1.5.1"
   author: Rinho Telematics
   homepage: https://config.rinho.com.ar/skills/index.html
 ---
@@ -52,7 +52,10 @@ Ask in one message, only what you don't know yet:
   ```
 
   Its JSON has one `reply` per query (`null` = no answer: the device rejected it or is silent) and
-  `device` with id, model and firmware. Never scan or open other ports, and never use any other
+  `device` with id, model and firmware. A wildcard query (`QRL**`) answers one line per slot: the
+  tool collects them in `replies[]` (`count` = how many); `reply` alone is just the first. Any
+  configuration slot can be read the same way (`QTD10`, `QVL02`, `QUV00`, `QRL50`…): they are
+  read-only; the reply can carry more digits than the set command (`RVL02E00051000`). Never scan or open other ports, and never use any other
   serial tool: opening a port toggles DTR/RTS and can reboot another board on the PC. A device
   with a password answers nothing until the user sets it in the `RINHO_PASSWORD` environment
   variable (the tool logs in itself; never ask for the password in the chat). If the user hasn't
@@ -109,7 +112,7 @@ Give:
 
 ## Version check
 
-This skill is version 1.5.0. Once per conversation, if you can fetch URLs, GET
+This skill is version 1.5.1. Once per conversation, if you can fetch URLs, GET
 https://config.rinho.com.ar/skills/version.json and compare `skills["rinho-diagnostics"].version`.
 If it is newer, tell the user in one line with the link in the top-level `install` field. If the fetch fails,
 continue silently. Never download or replace skill files yourself.

@@ -77,10 +77,10 @@ Response formats are in `commands.md`.
 
 ## Output / engine cut / buzzer not working
 
-`>QIO<` `>QCXXP<` `>QGC<` `>QRL**<`
+`>QIO<` `>QCXXP00<` (one query per output: `QCXXP01`, `QCXXP02`) `>QGC<` `>QRL**<`
 - `XP` bits in `QIO` show the output state now.
-- `QCXXP` all `9` for an output → that output is disabled and ignores commands (Spider ships XP01
-  and XP02 disabled).
+- `QCXXPnn` all `9` for an output → that output is disabled and ignores commands (Spider ships XP01
+  and XP02 disabled). `>QCXXP<` without the index gets no answer.
 - `QGC` status `active` → a gradual engine cut is running (it survives reboots on recent firmware).
 - Rule that should drive it: check its `TRG`/`CND` against the current signals (`QSS<signal>`).
 
