@@ -60,14 +60,21 @@ Response formats are in `commands.md`.
 
 ## A parameter or sensor is missing in Wialon (position arrives, a field doesn't)
 
-`>QWD<` `>QUC00<` `>QCXIP<`
+`>QCXIP<` first (which protocol the channel speaks), then the exact frame Wialon receives:
+TAIP → `>QCQ<`, `>QER<`, `>QEQ<` (or `QBQ`/`QHQ`/`QHV`/`QCV`, the family the rules send);
+Wialon IPS → `>QWD0<` and `>QUC00<` (the template). On a TAIP unit `QWD` builds the IPS frame, which
+is **not** what Wialon gets.
 - What Wialon decodes from each frame family (TAIP CQ/BQ/ER/EQ/HQ/HV/CV and IPS), with the
   parameter names, is the table in section 4 of the application note "Rinho en Wialon":
-  https://docs.rinho.com.ar/notas-de-aplicacion/rinho-en-wialon. Compare the frame from `QWD` with it.
-- The unit needs the WLP of its model imported (https://docs.rinho.com.ar/descargas/wialon/,
-  files rinho-zero-iot.wlp, rinho-spider-iot.wlp, rinho-smart-iot.wlp; one file for TAIP and IPS):
-  it maps `in8` ignition, `pwr_int`, `adc2` (IPS only), `cel_level`, `rep_num` and the CAN sensors.
-- CAN fields (`rpm`, `fuel_lvl`, …) arrive as 0 without a CAN bus (Spider/Smart) and never on Zero.
+  https://docs.rinho.com.ar/notas-de-aplicacion/rinho-en-wialon (section 12 for the frame queries).
+  Compare the frame you got with it.
+- The unit needs the WLP of its model imported, one file for TAIP and IPS:
+  https://docs.rinho.com.ar/descargas/wialon/rinho-zero-iot.wlp,
+  https://docs.rinho.com.ar/descargas/wialon/rinho-spider-iot.wlp,
+  https://docs.rinho.com.ar/descargas/wialon/rinho-smart-iot.wlp. It maps `in8` ignition,
+  `pwr_int`, `adc2` (IPS only), `cel_level`, `rep_num` and the CAN sensors.
+- CAN sensors exist on Spider/Smart only, never on Zero. In IPS, `ECU(n;0)` fields arrive as 0
+  without a CAN bus (measured); in TAIP (`ER`/`EQ` without a bus) it was not measured.
 - In IPS the template (`QUC00`) decides which parameters travel; `'CHN'` is not resolved and `'OT'`
   is in metres. Event ids with letters make Wialon drop `rep_num`.
 
