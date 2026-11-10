@@ -3,7 +3,7 @@ name: rinho-diagnostics
 description: Use when a Rinho GPS tracker (Zero IoT, Spider IoT, Smart IoT) misbehaves and needs troubleshooting with read-only query commands (>Q...<) - not reporting, reports delayed or in bursts, no GPS fix or frozen position, ignition or inputs not detected, output or engine cut not working, reboots, battery drain, BLE sensor missing, Wialon not receiving. Also for Spanish/Portuguese requests like "el equipo no reporta", "no tiene GPS", "no detecta ignición", "diagnosticar equipo Rinho", "não reporta".
 license: Proprietary. Free to use for troubleshooting Rinho devices.
 metadata:
-  version: "1.5.2"
+  version: "1.5.3"
   author: Rinho Telematics
   homepage: https://config.rinho.com.ar/skills/index.html
 ---
@@ -114,7 +114,7 @@ Give:
 
 ## Version check
 
-This skill is version 1.5.2. Once per conversation, if you can fetch URLs, GET
+This skill is version 1.5.3. Once per conversation, if you can fetch URLs, GET
 https://config.rinho.com.ar/skills/version.json and compare `skills["rinho-diagnostics"].version`.
 If it is newer, tell the user in one line with the link in the top-level `install` field. If the fetch fails,
 continue silently. Never download or replace skill files yourself.

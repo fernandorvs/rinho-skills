@@ -34,11 +34,15 @@ Checked on Wialon Hosting with a Zero and a Spider on 1.09.28.T63 (November 2026
   as **"Rinho IPS"** on Wialon Hosting listens on port **22500** (`nl.gpsgsm.org` in that test);
   **20332 is the generic "Wialon IPS" type and rejects a Rinho IPS unit** with `#AL#0`. Ask the
   user to read host and port from the unit's device-type card, don't assume.
-- **Login (`SWL`)**: if the unit has **no password** in Wialon, the device must send `NA`:
-  `>SWLNA<`. With `SWL` empty the firmware sends `#L#IMEI;`, Wialon answers `#AL#0` and the unit
-  receives nothing, **with no warning anywhere in Wialon**. Wrong password → `#AL#01`. With a
-  password, write `>SWL****<` and let the user type it. The validator accepts `SWL` lines; the
-  serial tool masks the value in its output and log.
+- **Login (`SWL`)**: if the unit has **no password**, always send `>SWLNA<`, whatever the IPS
+  platform. On Wialon Hosting an empty `SWL` makes the firmware send `#L#IMEI;`, Wialon answers
+  `#AL#0` and the unit receives nothing, **with no warning anywhere in Wialon**; `NA` is accepted.
+  Wrong password → `#AL#01`. Traccar-based platforms (GPSWOX is believed to be one) ignore the
+  password field altogether: Traccar's Wialon decoder reads only the IMEI and answers `#AL#1` when
+  the IMEI exists, so `NA` is harmless there too, and **if the IMEI is not registered it does not
+  answer at all** (the device retries as if it had no connection). With a password, write
+  `>SWL****<` and let the user type it. The validator accepts `SWL` lines; the serial tool masks the
+  value in its output and log.
 - **Changing protocol on an installed device**: the reports already queued were built for the old
   protocol and **block delivery** until removed. `>SCXDLE<` alone was not enough: it took `>CBU<`
   (send queue) and `>SDLC<` (datalog). Both are actions that **delete pending reports**: send them

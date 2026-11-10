@@ -41,10 +41,12 @@ Response formats are in `commands.md`.
    Queue at 0 and not growing → delivering. If the platform still shows nothing, the problem is on
    the platform side (wrong device ID, wrong port or protocol on the server).
 4. Wialon IPS, nothing arrives (checked on Wialon Hosting, Nov 2026): in this order.
-   - `>QWL<` first. **Empty** (`RWL` with nothing) = the login fails silently: the device sends
-     `#L#IMEI;`, Wialon answers `#AL#0` and shows no error. A unit **without password** needs
-     `>SWLNA<` (literal `NA`); with a password, `SWL` + the password (the user types it; if they
-     paste the reply, masked). `#AL#01` = wrong password.
+   - `>QWL<` first. **Empty** (`RWL` with nothing) on Wialon Hosting = the login fails silently:
+     the device sends `#L#IMEI;`, Wialon answers `#AL#0` and shows no error. A unit **without
+     password** needs `>SWLNA<` (literal `NA`, valid on every IPS platform); with a password, `SWL`
+     + the password (the user types it; if they paste the reply, masked). `#AL#01` = wrong password.
+     On Traccar-based platforms (GPSWOX, presumably) the password is ignored and **no answer to the
+     login means the IMEI is not registered** on the platform: check the unit there, not the device.
    - `>QIP0<` / `>QCXIP<`: host, port and `W` must match the **unit type** in Wialon. A "Rinho
      IPS" unit on Wialon Hosting listens on 22500; **20332 is the generic "Wialon IPS" type and
      rejects a Rinho IPS unit**.
