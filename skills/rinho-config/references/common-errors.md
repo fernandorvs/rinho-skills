@@ -18,6 +18,8 @@ the rule is simply not loaded.
 | Wrong digit width (`SVL00E921` instead of `SVL00E00921`) | Field shifts, wrong value or rejected | Follow the exact widths of the doc page; use `explain` to check |
 | CAN or 1-Wire commands on a **Zero** | Zero has neither: the configurator sends nothing of it | Ask the model first; use an alternative (e.g. BLE fuel probe) |
 | Report `GU0...` hardcoded | UC00 may be in use (e.g. by Wialon) | Use the UC slot you defined |
+| `SUCnn ` with a long template refused without reply | Templates above ~212 characters are dropped silently (229 measured) | Shorten names or drop fields; the validator warns (`UC_TEMPLATE_LONG`) |
+| Wialon IPS: `SWL` rejected or empty | Empty login = `#AL#0`, nothing arrives, no error in Wialon | `>SWLNA<` for a unit without password; the validator accepts `SWL` lines |
 | Outputs toggled with `SSSXP` as a config line | Not persistent: the importer skips it | An output that must stay on under a condition is a pair of rules: `TRG=<cond>+;ACC={SSSXP0011}` and `TRG=<cond>-;ACC={SSSXP0000}` |
 | Two recipes sharing an output or flag | One recipe's trigger fires on the other's action (buzzer on → engine-cut countdown) | Separate flags/timers per feature; gate with `CND=` |
 | "Clean the old rules" with `SRL**D` or `SFACTORY` | `SRL**D` erases all 196 rules; `SFACTORY` wipes everything (ID, APN, server) | Read and export the device first; delete only the slots you replace, with `SRLnnD` sent from the monitor |

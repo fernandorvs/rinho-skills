@@ -11,7 +11,9 @@ If a reply doesn't match, trust the device and tell the user what it answered.
 
 `rinho-serial query` (the serial tool of the skills) only accepts `Q…` commands and refuses the
 ones in "Do NOT send"; it masks the passwords `QCXAPN` and `QWL` return. Besides this list, any
-configuration slot is readable (`QTDnn`, `QVLnn`, `QUVnn`, `QNTnn`, `QRLnn`…): a query never writes.
+configuration slot is readable (`QTDnn`, `QVLnn`, `QUVnn`, `QNTnn`, `QRLnn`, `QUCnn`…): a query never
+writes. `**` exists only for `QRL`; `QUC**` and the like get no answer, so read a range
+(`QUC00..0F`, expanded by the tool). `RUCnn ` with nothing after the index = empty user report.
 
 ## Allowlist (safe to send while diagnosing)
 

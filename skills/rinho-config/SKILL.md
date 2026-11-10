@@ -3,7 +3,7 @@ name: rinho-config
 description: Use when configuring Rinho GPS trackers (Zero IoT, Spider IoT, Smart IoT) - writing or fixing rules (SRL), timers, speed limits, outputs, alarms, reports or any >S...< command block, explaining an existing Rinho configuration, or fixing an import error in the Code mode of config.rinho.com.ar. Also for Spanish/Portuguese requests like "configurar equipo Rinho", "armar una regla", "corte de motor", "exceso de velocidad", "ralentí", "botón de pánico", "configurar rastreador", "bloqueio".
 license: Proprietary. Free to use for configuring Rinho devices.
 metadata:
-  version: "1.6.1"
+  version: "1.6.2"
   author: Rinho Telematics
   homepage: https://config.rinho.com.ar/skills/index.html
 ---
@@ -44,14 +44,20 @@ If not already known, ask (one short message):
   it to the validator with `--fw` so it flags what that device can't run.
 - **Configurator mode** they use: Basic or Advanced. In **Basic**, rules RL00-RL31 are reserved:
   put custom rules at **RL50 or higher**.
-- **What is already configured.** Ideally the current config exported from the configurator, so you
-  don't overwrite slots in use. If they don't have it, use slots the configurator's own modules don't
-  take (rules RL50+, timers TD10+, flags U20+, speed limits VL02+, UV05+), say which you used, and
-  tell them to read the device before importing. Those ranges are a convention, not a guarantee:
-  a previous installer may have used them. **If you can read the device** (serial port, below),
-  read `QRL**` first and look at which TD/U/VL/UV/NT each rule references; a timer slot that
-  answers `D` but with a non-zero time, or a flag at `1`, is in use by someone. Pick slots no rule
-  names.
+- **What is already configured.** There is **no slot range that is free by convention**. The
+  configurator's Basic mode reserves RL00-RL31 and RLFF, TD00-TD01, DC00, VL00-VL01, AR00-AR02 and
+  PK00; everything else is handed out **first free from 00** by the configurator's assistant when
+  it applies a recipe (the same recipes as yours), so a device that already got one has TD02+,
+  U00+, VL02+, UV00+… taken from the bottom up (a Spider in the field had TD10-TD12, VL01 and U20
+  in use by two recipes). In order of preference:
+  1. **Read the device** (serial port, below): `QRL**` for every rule, then the slots the rules
+     name and the ones you plan to use (`QTDnn`, `QUVnn`, `QVLnn`, `QSSUnn`; user reports one by
+     one, `QUC00..0F`: there is no `QUC**`). A slot is in use if any rule names it, if a timer
+     answers a non-zero time even in `D`, if a flag answers `1`, or if a UC has a template.
+  2. Else ask for the configuration exported from the configurator (Code mode) and read it there.
+  3. Else allocate **from the top of each range downwards** (RL99, RL98…; TD31…; U63…; VL15…;
+     UV47…; NT31…; UC0F…), where neither the configurator nor the recipes start; say which slots
+     you used and tell them to read the device before importing. Capacities per model: `>QVRE<`.
 
 If the user is in a hurry and already gave model and firmware, write the block with those slots and
 state the assumptions; don't block on the rest.
@@ -189,7 +195,10 @@ npx -y rinho-serial run COM4 --file actions.txt --confirmed
 ```
 
 Without `--confirmed` it only lists what it would send: show the user that list, say what each
-command does on the device, and pass the flag only after their explicit yes, every time. Password,
+command does on the device, and pass the flag only after their explicit yes, every time. **On
+Windows (PowerShell / cmd) put the commands in a file and use `--file`** (or `--file -` and pipe
+them on stdin): commands given as arguments lose their inner quotes (`>SIP0"host",port<` arrives
+as `>SIP0host,port<` and the device answers `RIP0ERR`). Password,
 factory-reset and firmware commands additionally need `--unsafe`: you never produce those (rule 5),
 so you never pass it; if the user insists on sending one themselves, explain what it does and let
 them run it. `run` stops at the first command without answer (the device rejected it) or with an
@@ -204,9 +213,10 @@ npx -y rinho-serial restore COM4 rinho-backup-865413053387568-2026-11-09T00-08-5
 
 It sends the lines as they are (no validator, same confirmation as `run`), **rules first and then
 timers and flags**: a rule still active restarts the timer you just restored. Keep that order when
-you clean up by hand too. Resources that were empty go back as `SRLnnD` / `STDnnD…` / `SVLnnD…`:
-`send` refuses those lines (the validator sees no change against an empty config), which is why
-they go through `restore` or `run`. Clearing a slot on purpose is the same: `run`, not `send`.
+you clean up by hand too. Resources that were empty go back as `SRLnnD` / `STDnnD…` / `SVLnnD…`, and an empty user
+report as `SUCnn*` (the device ignores `SUCnn ` with nothing after it): `send` refuses those lines
+(the validator sees no change against an empty config), which is why they go through `restore` or
+`run`. Clearing a slot on purpose is the same: `run`, not `send`.
 
 If your environment blocks the dry run (`run` without `--confirmed` only prints the list, but a
 permission mode may still refuse it), write the list yourself from the file and ask the user.
@@ -221,7 +231,7 @@ TD03 (10 min); when it expires, send report CQ00 and go to low power".
 
 ## Version check
 
-This skill is version 1.6.1. Once per conversation, if you can fetch URLs, GET
+This skill is version 1.6.2. Once per conversation, if you can fetch URLs, GET
 https://config.rinho.com.ar/skills/version.json and compare `skills["rinho-config"].version`.
 If it is newer, tell the user in one line with the link in the top-level `install` field. If the fetch fails,
 continue silently. Never download or replace skill files yourself.

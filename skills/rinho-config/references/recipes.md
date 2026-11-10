@@ -69,9 +69,9 @@ Eventos de batería baja, batería OK y batería desconectada sobre la tensión 
 | `bajaMax` | `1000` | `4d` | Tope del rango 'baja' en centésimas de volt (1000 = 10,00 V). El rango va de descMax a este valor. |
 | `okMin` | `1100` | `4d` | Piso del rango 'OK' en centésimas de volt (1100 = 11,00 V). Entre bajaMax y okMin queda una banda muerta que evita ida y vuelta entre baja y OK. |
 | `debDecimas` | `50` | `3d` | Tiempo de establecimiento de cada rango, en décimas de segundo (50 = 5 s): la tensión tiene que sostenerse ese tiempo para que el rango cambie. |
-| `evBaja` | `03` |  | Evento batería baja (dos dígitos, 00-99 para SmartTrack). |
-| `evOk` | `14` |  | Evento batería OK. |
-| `evDesc` | `04` |  | Evento batería desconectada. |
+| `evBaja` | `03` |  | Evento batería baja (dos dígitos hexa, 00-FF). La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evOk` | `14` |  | Evento batería OK. La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evDesc` | `04` |  | Evento batería desconectada. La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
 
 **Resolved example**
 
@@ -118,7 +118,7 @@ Al encender ignición (IN07) el buzzer empieza a pitar (100 ms cada 5 s) pidiend
 |---|---|---|---|
 | `umbral` | `0.500` |  | Lectura maxima permitida, en la unidad del alcoholimetro (ej. g/L). Es el campo max del UV tipo F: se considera OK si 0.000 <= lectura < umbral. |
 | `eventoOk` | `41` |  | Numero de evento (2 digitos hex) para 'soplo por debajo del maximo'. GU0 = Wialon IPS. |
-| `eventoFalla` | `42` |  | Numero de evento (2 digitos hex) para 'soplo por encima del maximo'. |
+| `eventoFalla` | `42` |  | Numero de evento (2 digitos hex) para 'soplo por encima del maximo'. La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon lo hace en CQ/EQ y en BQ/ER/HQ/HV/CV los muestra tal cual. |
 | `ignicion` | `IN07` |  | Señal de ignición. IN07 = entrada digital (debounce ~100 ms). IGN tiene debounce default de 10 s, por eso se prefiere IN07 salvo que configuren los tiempos de IGN. |
 | `buzzerXp` | `01` |  | Indice (2 digitos) de la salida XP del buzzer. |
 | `delaySeg` | `00001` |  | Delay del TD (5 digitos, segundos) entre el flanco de captura y la evaluacion. 1 s es mas que suficiente para que el UV se refresque (45 ms). |
@@ -235,7 +235,7 @@ Reporta un evento de pánico cuando se aprieta un pulsador conectado a una entra
 | `flanco` | `-` |  | Flanco que corresponde a apretar: '-' si el pulsador lleva la entrada a masa (lo habitual: TRG=IN00-), '+' si la lleva a positivo. |
 | `tonDecimas` | `10` | `4d` | Décimas de segundo que la entrada tiene que sostener el estado 1 para darlo por válido (10 = 1 s). Con flanco '+', es el tiempo mínimo apretado. |
 | `toffDecimas` | `10` | `4d` | Décimas de segundo que la entrada tiene que sostener el estado 0 para darlo por válido (10 = 1 s). Con flanco '-', es el tiempo mínimo apretado. |
-| `evento` | `10` |  | Evento de pánico (dos dígitos, 00-99 para SmartTrack). |
+| `evento` | `10` |  | Evento de pánico (dos dígitos hexa, 00-FF). La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
 
 **Resolved example**
 
@@ -351,9 +351,9 @@ Corte de motor seguro: la plataforma AUTORIZA el corte poniendo un flag en 1, y 
 | `flagAutoriza` | `16` |  | Flag U (2 dígitos) que autoriza el corte. La plataforma manda >SSSU1611< para cortar y >SSSU1600< para restituir. |
 | `salidaCorte` | `00` |  | Índice (2 dígitos) de la salida XP del relé de corte. |
 | `velMax` | `10` | `4d` | Velocidad (km/h) por debajo de la cual se permite cortar. |
-| `evalSeg` | `5` | `5d` | Cada cuántos segundos se evalúa. |
-| `evCorteOn` | `83` |  | Evento salida de corte activada (dos dígitos, 00-99 para SmartTrack). |
-| `evCorteOff` | `84` |  | Evento salida de corte liberada. |
+| `evalSeg` | `5` | `5d` | Cada cuántos segundos se evalúa. La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evCorteOn` | `83` |  | Evento salida de corte activada (dos dígitos hexa, 00-FF). La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evCorteOff` | `84` |  | Evento salida de corte liberada. La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
 
 **Resolved example**
 
@@ -446,8 +446,8 @@ Sintetiza en un flag U la señal 'el vehículo está dentro de ALGUNA de estas r
 |---|---|---|---|
 | `zonas` | `RG00RG01\|` |  | Condición en RPN con la OR de las regiones: RG00RG01\| para dos, RG00RG01\|RG02\| para tres, hasta diez por regla (RG00RG01\|RG02\|…RG09\|). Las regiones se definen aparte con su geometría. |
 | `ventanaSeg` | `10` | `5d` | Segundos sin estar en ninguna zona antes de bajar el flag (histéresis). |
-| `evEntra` | `20` |  | Evento entrada a zona (dos dígitos, 00-99 para SmartTrack). |
-| `evSale` | `21` |  | Evento salida de zona. |
+| `evEntra` | `20` |  | Evento entrada a zona (dos dígitos hexa, 00-FF). La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evSale` | `21` |  | Evento salida de zona. La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
 
 **Resolved example**
 
@@ -495,8 +495,8 @@ Reporta un evento cuando una entrada digital se activa y otro cuando se desactiv
 | Parameter | Default | Format | Meaning |
 |---|---|---|---|
 | `entrada` | `03` |  | Índice (2 dígitos) de la entrada digital del sensor. |
-| `evActiva` | `08` |  | Evento cuando la entrada pasa a 1 (puerta abierta, tapa abierta, desenganche). Dos dígitos, 00-99 para SmartTrack. |
-| `evInactiva` | `09` |  | Evento cuando la entrada vuelve a 0 (puerta cerrada, tapa cerrada, enganche). |
+| `evActiva` | `08` |  | Evento cuando la entrada pasa a 1 (puerta abierta, tapa abierta, desenganche). Dos dígitos hexa, 00-FF. La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evInactiva` | `09` |  | Evento cuando la entrada vuelve a 0 (puerta cerrada, tapa cerrada, enganche). La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
 | `filtroDecimas` | `5` | `4d` | Antirrebote en décimas de segundo, el mismo en los dos sentidos (5 = 0,5 s): el estado tiene que sostenerse ese tiempo para que la señal cambie. |
 
 **Resolved example**
@@ -539,8 +539,8 @@ Reporta un evento al entrar y otro al salir de una zona lógica del módulo de z
 | Parameter | Default | Format | Meaning |
 |---|---|---|---|
 | `zona` | `ZNA00` |  | Zona lógica, con su grupo: ZNA00..ZNA99 o ZNB00..ZNB99 (índice decimal). Las zonas 100 en adelante no se pueden usar en reglas. |
-| `evEntra` | `20` |  | Evento al entrar (dos dígitos, 00-99 para SmartTrack). |
-| `evSale` | `21` |  | Evento al salir. |
+| `evEntra` | `20` |  | Evento al entrar (dos dígitos hexa, 00-FF). La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evSale` | `21` |  | Evento al salir. La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
 
 **Resolved example**
 
@@ -582,8 +582,8 @@ Aviso de exceso de velocidad simple, sin zonas: al superar el límite suena el b
 | `velOn` | `110` | `4d` | Límite de velocidad (km/h): al superarlo suena el buzzer y se reporta. |
 | `velOff` | `100` | `4d` | Umbral de apagado (km/h), más bajo que velOn: histéresis para que el buzzer no titile al rondar el límite. |
 | `buzzerXp` | `1` |  | Índice (1 dígito) de la salida XP del buzzer. Encender: SSSXP0<xp>11, apagar: SSSXP0<xp>00. |
-| `evOn` | `53` |  | Evento de exceso (dos dígitos, 00-99 para SmartTrack). |
-| `evOff` | `54` |  | Evento de fin del exceso. |
+| `evOn` | `53` |  | Evento de exceso (dos dígitos hexa, 00-FF). La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evOff` | `54` |  | Evento de fin del exceso. La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
 
 **Resolved example**
 
@@ -629,8 +629,8 @@ Alarma de exceso de velocidad que sólo dispara si el vehículo se mantiene por 
 | `velMax` | `110` | `4d` | Límite de velocidad (km/h) que hay que sostener. |
 | `decimas` | `100` | `3d` | Tiempo de establecimiento en décimas de segundo (100 = 10 s): cuánto tiene que sostenerse por encima para alarmar, y por debajo para dar el fin. |
 | `buzzerXp` | `1` |  | Índice (1 dígito) de la salida XP del buzzer. Encender: SSSXP0<xp>11, apagar: SSSXP0<xp>00. |
-| `evOn` | `53` |  | Evento de exceso sostenido (dos dígitos, 00-99 para SmartTrack). |
-| `evOff` | `54` |  | Evento de fin del exceso. |
+| `evOn` | `53` |  | Evento de exceso sostenido (dos dígitos hexa, 00-FF). La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evOff` | `54` |  | Evento de fin del exceso. La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
 
 **Resolved example**
 
@@ -673,8 +673,8 @@ Eventos de frenada brusca y aceleración brusca por delta de velocidad GPS (mód
 | `deltaFrenada` | `15` | `3d` | Caída de velocidad en km/h en un segundo que cuenta como frenada brusca (15 = -15 km/h/s). |
 | `deltaAcel` | `10` | `3d` | Aumento de velocidad en km/h en un segundo que cuenta como aceleración brusca. |
 | `confSeg` | `2` | `5d` | Segundos que la señal DV tiene que sostenerse para reportar. |
-| `evFrenada` | `31` |  | Evento frenada brusca (dos dígitos, 00-99 para SmartTrack). |
-| `evAcel` | `30` |  | Evento aceleración brusca. |
+| `evFrenada` | `31` |  | Evento frenada brusca (dos dígitos hexa, 00-FF). La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evAcel` | `30` |  | Evento aceleración brusca. La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
 
 **Resolved example**
 
@@ -826,10 +826,10 @@ Reacción a la interferencia de celular (jamming) sin falsos positivos: al detec
 |---|---|---|---|
 | `guardaSeg` | `60` | `5d` | Segundos de interferencia sostenida antes de darla por válida. |
 | `senalRehab` | `IC00+` |  | Señal (con flanco) que rehabilita el motor: IC00+ = un chofer inició sesión; U10+ = flag que setea la plataforma con >SSSU1011<; IN01+ = pulsador. |
-| `evInicio` | `45` |  | Evento inicio de interferencia (dos dígitos, 00-99 para SmartTrack). |
-| `evFin` | `46` |  | Evento fin de la interferencia antes de validarse. |
-| `evValidado` | `47` |  | Evento interferencia validada (se ejecuta el corte). |
-| `evRehab` | `48` |  | Evento rehabilitación del motor. |
+| `evInicio` | `45` |  | Evento inicio de interferencia (dos dígitos hexa, 00-FF). La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evFin` | `46` |  | Evento fin de la interferencia antes de validarse. La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evValidado` | `47` |  | Evento interferencia validada (se ejecuta el corte). La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evRehab` | `48` |  | Evento rehabilitación del motor. La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
 
 **Resolved example**
 
@@ -960,9 +960,9 @@ Alarma cuando una entrada digital queda activa más de N segundos (default 10): 
 | `entrada` | `00` |  | Índice (2 dígitos) de la entrada digital del sensor de puerta. Activa = 1 = abierta. |
 | `segundos` | `10` | `5d` | Cuántos segundos puede quedar abierta antes de alarmar. |
 | `salidaAlarma` | `02` |  | Índice (2 dígitos) de la salida XP de la sirena o buzzer. Se enciende al alarmar y se apaga al cerrar la puerta. |
-| `evAbre` | `10` |  | Evento de apertura (dos dígitos, 00-99 para SmartTrack). |
-| `evCierra` | `11` |  | Evento de cierre. |
-| `evAlarma` | `40` |  | Evento de puerta abierta demasiado tiempo. |
+| `evAbre` | `10` |  | Evento de apertura (dos dígitos hexa, 00-FF). La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evCierra` | `11` |  | Evento de cierre. La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evAlarma` | `40` |  | Evento de puerta abierta demasiado tiempo. La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
 
 **Resolved example**
 
@@ -1011,8 +1011,8 @@ Detecta ralentí: contacto dado y velocidad por debajo de un umbral (default 5 k
 |---|---|---|---|
 | `velQuieto` | `5` | `4d` | Velocidad (km/h) por debajo de la cual se considera detenido. |
 | `guardaSeg` | `300` | `5d` | Segundos detenido con contacto antes de declarar ralentí. |
-| `evInicio` | `09` |  | Evento inicio de ralentí (dos dígitos, 00-99 para SmartTrack). |
-| `evFin` | `10` |  | Evento fin de ralentí. |
+| `evInicio` | `09` |  | Evento inicio de ralentí (dos dígitos hexa, 00-FF). La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evFin` | `10` |  | Evento fin de ralentí. La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
 
 **Resolved example**
 
@@ -1098,8 +1098,8 @@ El módulo GC (corte gradual de combustible/motor) no tiene una señal TRG= nati
 
 | Parameter | Default | Format | Meaning |
 |---|---|---|---|
-| `evInicio` | `59` |  | Evento (hex 00-FF) del reporte al arrancar el corte (mapear en plataforma, ej. 'Corte de combustible iniciado'). |
-| `evFin` | `5A` |  | Evento (hex) del reporte al terminar/cancelarse el corte. |
+| `evInicio` | `59` |  | Evento (hex 00-FF) del reporte al arrancar el corte (mapear en plataforma, ej. 'Corte de combustible iniciado'). La mayoría de las plataformas (Wialon incluida en CQ) los convierte a decimal (00-FF → 0-255: 31 → 49). |
+| `evFin` | `5A` |  | Evento (hex) del reporte al terminar/cancelarse el corte. La mayoría de las plataformas (Wialon incluida en CQ) los convierte a decimal (00-FF → 0-255: 31 → 49). |
 | `destino` | `` |  | Sufijo de destino del reporte. Vacío = TX viva DST_ALL (inmediata, best-effort). ';@LOG' = agregar además copia en log diferido (persiste sin cobertura). |
 
 **Resolved example**
@@ -1141,9 +1141,9 @@ Manda una copia de los reportes de posición, cambio de rumbo e ignición al des
 | `periodoSeg` | `30` | `5d` | Segundos entre posiciones al destino de respaldo (con contacto). |
 | `metros` | `100` | `5d` | Metros recorridos que también disparan el timer (0 = sólo por tiempo). |
 | `senalRumbo` | `DC00+` |  | Señal de cambio de rumbo ya configurada en la config (DC00+ es la de fábrica). |
-| `evPos` | `00` |  | Evento de posición periódica (dos dígitos). |
-| `evIgnOn` | `01` |  | Evento contacto dado. |
-| `evIgnOff` | `02` |  | Evento contacto quitado. |
+| `evPos` | `00` |  | Evento de posición periódica (dos dígitos). La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evIgnOn` | `01` |  | Evento contacto dado. La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evIgnOff` | `02` |  | Evento contacto quitado. La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
 
 **Resolved example**
 
@@ -1191,7 +1191,7 @@ Manda cada N segundos (default 5 min) un reporte de usuario TAIP con la posició
 | `varillas` | `0` | `2d` | Slots BS de las varillas, separados por coma, en el orden de los tanques: "0" una varilla, "0,1,2" tres tanques (hasta 4: 0 a 3). El primero sale como fl1/ag1, el segundo como fl2/ag2, etc. Verificar en qué slot está cada una con >QBS00<, >QBS01<... |
 | `tipo` | `BQ` |  | Familia de la trama base: BQ = posición + batería interna (la más usada en TAIP), CQ = posición sola, HQ = + horómetro. Va en $R{tipo} y en Q{tipo}; el recorte de 5 vale para toda la familia. |
 | `periodoSeg` | `300` | `5d` | Cada cuántos segundos sale el reporte (300 = 5 min; máximo 99999). Cuenta desde el arranque. |
-| `evento` | `30` |  | Número de evento del reporte (2 dígitos). Mapearlo en la plataforma. SmartTrack lee decimal 00-99: el hueco 0A-9F se pierde sin error visible. |
+| `evento` | `30` |  | Número de evento del reporte (dos dígitos hexa, 00-FF). Mapearlo en la plataforma. La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon lo hace en CQ/EQ y en BQ/ER/HQ/HV/CV los muestra tal cual. |
 | `destino` | `;@LOG` |  | ';@LOG' = log diferido en flash: sin cobertura se guarda y sale al volver la señal (no se pierde la curva de nivel). Vacío = TX viva DST_ALL (best-effort). |
 
 **Resolved example**
@@ -1241,7 +1241,7 @@ Un lector RFID externo conectado al puerto serie reenvía la misma trama cada po
 | `rxChars` | `000` |  | Cierra la captura al llegar a N caracteres (000 = no usar). Alternativa al footer para tramas de largo fijo sin delimitador. |
 | `rxTimeout` | `000` |  | Tiempo máximo para completar UNA trama. OJO: está en MILISEGUNDOS, no en centésimas, y el máximo real es 254 (ver notes). 000 = deja los 250 ms por defecto, de sobra para una trama corta. |
 | `largoTag` | `20` |  | Máximo de caracteres del tag a incluir en el reporte. Si el tag es más corto se manda entero; no hace falta ajustarlo salvo que quieras recortarlo a propósito. |
-| `evento` | `00` |  | Número de evento del reporte (2 dígitos hex). Ojo con la plataforma: SmartTrack lee decimal 00-99 y el hueco 0A-9F se pierde sin error visible. |
+| `evento` | `00` |  | Número de evento del reporte (dos dígitos hexa, 00-FF). La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon lo hace en CQ/EQ y en BQ/ER/HQ/HV/CV los muestra tal cual. |
 | `destino` | `;@LOG` |  | Destino del reporte. ';@LOG' = log diferido en flash (persiste sin cobertura). Vacío = TX viva DST_ALL (best-effort, se pierde sin cobertura). |
 
 **Resolved example**
@@ -1288,8 +1288,8 @@ Detecta caídas bruscas del nivel de combustible leído por CAN/OBD (ECU02 = fue
 | `ventanaSeg` | `120` |  | Ventana del delta de caída en segundos. El robo en marcha se alerta al vencer; el estacionado, en la primera ventana tras arrancar. |
 | `umbralRecargaPct` | `10` |  | Subida (puntos de %) que reporta el evento de recarga. |
 | `ventanaRecargaSeg` | `300` |  | Ventana del delta de recarga (una carga en surtidor entra cómoda en 5 min). |
-| `evRobo` | `45` |  | Número de evento del reporte de robo (mapear en plataforma como 'Robo de combustible'). |
-| `evRecarga` | `46` |  | Número de evento del reporte de recarga. |
+| `evRobo` | `45` |  | Número de evento del reporte de robo (mapear en plataforma como 'Robo de combustible'). La mayoría de las plataformas (Wialon incluida en CQ) los convierte a decimal (00-FF → 0-255: 31 → 49). La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon lo hace en CQ/EQ y en BQ/ER/HQ/HV/CV los muestra tal cual. |
+| `evRecarga` | `46` |  | Número de evento del reporte de recarga. La mayoría de las plataformas (Wialon incluida en CQ) los convierte a decimal (00-FF → 0-255: 31 → 49). La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon lo hace en CQ/EQ y en BQ/ER/HQ/HV/CV los muestra tal cual. |
 | `destino` | `` |  | Sufijo de destino del reporte. Vacío = TX viva DST_ALL (inmediata, best-effort). ';@LOG' = SOLO log diferido en flash (persiste pero NO llega en el momento). Para alerta antirrobo dejar vacío; si querés copia persistente, agregá una segunda acción con ;@LOG. |
 
 **Resolved example**
@@ -1340,8 +1340,8 @@ Detecta caídas bruscas del nivel medido por una varilla Bluetooth (sensor BS, e
 | `maxEdadSeg` | `60` |  | Edad máxima del dato BLE (segundos) para considerarlo fresco. El campo age satura en 255. Debe ser MENOR que cualquier timeout que tenga la SBS (ideal: SBS con time=0). |
 | `umbralRecargaUnidades` | `50` |  | Subida en unidades crudas que reporta el evento de recarga. |
 | `ventanaRecargaSeg` | `600` |  | Ventana del delta de recarga (los tanques grandes tardan en cargarse). |
-| `evRobo` | `45` |  | Número de evento del reporte de robo (mapear en plataforma). |
-| `evRecarga` | `46` |  | Número de evento del reporte de recarga. |
+| `evRobo` | `45` |  | Número de evento del reporte de robo (mapear en plataforma). La mayoría de las plataformas (Wialon incluida en CQ) los convierte a decimal (00-FF → 0-255: 31 → 49). La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon lo hace en CQ/EQ y en BQ/ER/HQ/HV/CV los muestra tal cual. |
+| `evRecarga` | `46` |  | Número de evento del reporte de recarga. La mayoría de las plataformas (Wialon incluida en CQ) los convierte a decimal (00-FF → 0-255: 31 → 49). La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon lo hace en CQ/EQ y en BQ/ER/HQ/HV/CV los muestra tal cual. |
 | `destino` | `` |  | Sufijo de destino del reporte. Vacío = TX viva DST_ALL (inmediata, best-effort). ';@LOG' = SOLO log diferido (persiste pero no inmediato). |
 
 **Resolved example**
@@ -1449,12 +1449,12 @@ Enriquece los viajes con el comportamiento del chofer para que el score device-s
 | `rpmLimit` | `4000` |  | Umbral de over-rev (RPM). Nafta ~4000-4500; DIÉSEL más bajo ~2800-3200. Es el campo min del UV. |
 | `rpmTimeout` | `15` |  | Timeout del QECU en SEGUNDOS: si el CAN no da RPM válido en ese lapso, devuelve 0 (no dispara). NO es ms. |
 | `overrevPeriod` | `10` | `5d` | Período del TD de over-rev en segundos = 'peso por tiempo'. Cada N s continuos sobre redline suma 1 a GC1. Se configura con STD<idx>D<overrevPeriod:5d> (D = deshabilitado + persiste). |
-| `evTrack` | `00` |  | Evento de punto de tracking (hex 00-FF) |
-| `evStart` | `01` |  | Evento de inicio de viaje (hex) |
-| `evEnd` | `02` |  | Evento de fin de viaje (hex) |
-| `evAccel` | `31` |  | Evento en vivo de aceleración brusca (hex, rango propio para no pisar 00/01/02) |
-| `evBrake` | `30` |  | Evento en vivo de frenada brusca (hex) |
-| `evSpeed` | `14` |  | Evento en vivo de exceso de velocidad (hex; 0x14 = 20 dec, default del configurador) |
+| `evTrack` | `00` |  | Evento de punto de tracking (hex 00-FF) La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evStart` | `01` |  | Evento de inicio de viaje (hex) La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evEnd` | `02` |  | Evento de fin de viaje (hex) La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evAccel` | `31` |  | Evento en vivo de aceleración brusca (hex, rango propio para no pisar 00/01/02) La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evBrake` | `30` |  | Evento en vivo de frenada brusca (hex) La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evSpeed` | `14` |  | Evento en vivo de exceso de velocidad (hex; 0x14 = 20 dec, default del configurador) La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
 | `trackSeg` | `30` | `5d` | Período del punto de tracking en segundos (5 dígitos). |
 | `trackMetros` | `100` | `5d` | Distancia que también dispara el punto de tracking, en metros (5 dígitos, 00000 = sólo por tiempo). |
 
@@ -1581,12 +1581,12 @@ Buzzer (salida digital) que avisa exceso de velocidad con tres límites según d
 | `zonaRegion` | `RG00` |  | Geocerca de la región (límite medio). Su geometría se define aparte |
 | `zonaWaypoint` | `WP00` |  | Geocerca del waypoint (límite bajo). Su geometría se define aparte |
 | `ignSig` | `IN07` |  | Señal de ignición usada en las CND (IN07 físico o IGN lógico) |
-| `evGenOn` | `53` |  | Evento exceso general ON (hex 00-FF) |
-| `evGenOff` | `54` |  | Evento general OFF (hex) |
-| `evRegOn` | `55` |  | Evento región ON (hex) |
-| `evRegOff` | `56` |  | Evento región OFF (hex) |
-| `evWpOn` | `57` |  | Evento waypoint ON (hex) |
-| `evWpOff` | `58` |  | Evento waypoint OFF (hex) |
+| `evGenOn` | `53` |  | Evento exceso general ON (hex 00-FF) La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evGenOff` | `54` |  | Evento general OFF (hex) La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evRegOn` | `55` |  | Evento región ON (hex) La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evRegOff` | `56` |  | Evento región OFF (hex) La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evWpOn` | `57` |  | Evento waypoint ON (hex) La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
+| `evWpOff` | `58` |  | Evento waypoint OFF (hex) La mayoría de las plataformas los convierte a decimal (00-FF → 0-255: 31 → 49); Wialon en tramas ER los muestra tal cual. |
 
 **Resolved example**
 

@@ -84,13 +84,37 @@ Each action is a command without `>` `<`, between braces:
 ### Reports and destinations
 
 - `GCQnnH`: standard position report; `GERnnH`: event report with a two-digit event id `nn` (what
-  platforms show as "event 20"). Priority `H`/`M`/`L`. Pick the event ids with the customer; the
-  recipes use 00-99 and don't reserve any.
+  platforms show as "event 32" for `GER20`, see below). Priority `H`/`M`/`L`. Pick the event ids
+  with the customer; the recipes don't reserve any.
 - No `;@...` suffix: the report goes to the main server queue. `;@LOG`: through the datalog, which
   the device uploads by the channel set in `CXDL` (the Rinho recipes use `GERnnH;@LOG` for events).
   `;@BACK`: backup server (IP4/IP5). `;@TRM`: serial port. `;@SM0`: SMS to number slot 0.
 - If the customer already receives events from the device, use the same report type and
   destination their existing rules use (`>QRL**<` shows them).
+
+**Event numbers as the platform shows them.** In TAIP the two characters after the report type
+are the event id **in hexadecimal**, and the device sends them unchanged in every frame family
+(`GCQ31` arrives as `RCQ31…`, `GER41` as `RER41…`). What the customer sees is up to the
+platform's decoder:
+- **Most platforms convert hex to decimal**, `00`-`FF` → 0-255 (SmartTrack included): `GCQ31`
+  shows as event 49, `GCQ10` as 16. This is the convention the configurator follows (its own event
+  list skips `0A`-`0F`).
+- Some platforms show the two characters as written (ASCII): `31` shows as 31.
+- Aker: `00`-`99` as written, `A0`-`FF` converted from hex to decimal (`A0` = 160), the same
+  scheme as rule slots.
+- Wialon, measured on 2026-11-10 (Spider and Zero on 1.09.28.T63, same UC, same id): converts in
+  `CQ` and `EQ` frames (`31` → 49, `43` → 67, `12` → 18) and shows as written in `BQ`, `ER`,
+  `HQ`, `HV` and `CV`.
+Ask which platform receives the reports and tell the user the number they will see for the id and
+family you chose. `00`-`09` reads the same everywhere.
+
+**User reports (UC) and the `;AP=` block in Wialon** (same measurement):
+- Wialon decodes `;AP=name:type:value` in every family (CQ, BQ, ER with its CAN block, EQ, HQ, HV,
+  CV). A template that works for all of them: `$R<fam>| #| Q<fam>,5,<len>| $;AP=...`.
+- A name equal to a fixed field (e.g. `pwr_int`) wins over the fixed field.
+- Wialon drops silently and keeps the rest of the block: empty values, values that don't match the
+  type, type 4, names longer than 32 characters. A repeated name keeps the last value.
+- `;PA=` is not decoded.
 
 Timers that fire a rule keep reloading: a one-shot timer needs `{STDnnC}` in the rule that handles
 its expiry. Timer definition: `STDnn<E|D><sssss><mmmmm>` = 5 digits of seconds + 5 digits of

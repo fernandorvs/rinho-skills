@@ -40,9 +40,21 @@ Response formats are in `commands.md`.
    apart (vehicle in use) → same conclusion: connectivity, server not listening, or (TCP/Wialon) server not acknowledging.
    Queue at 0 and not growing → delivering. If the platform still shows nothing, the problem is on
    the platform side (wrong device ID, wrong port or protocol on the server).
-4. Wialon: `>QWD<` (the exact frame the device would send) to compare with what Wialon expects.
-   `>QWL<` returns the Wialon password: ask for it only if the server rejects the login, and tell
-   the user to paste it masked. The device speaks Wialon IPS 1.0.
+4. Wialon IPS, nothing arrives (checked on Wialon Hosting, Nov 2026): in this order.
+   - `>QWL<` first. **Empty** (`RWL` with nothing) = the login fails silently: the device sends
+     `#L#IMEI;`, Wialon answers `#AL#0` and shows no error. A unit **without password** needs
+     `>SWLNA<` (literal `NA`); with a password, `SWL` + the password (the user types it; if they
+     paste the reply, masked). `#AL#01` = wrong password.
+   - `>QIP0<` / `>QCXIP<`: host, port and `W` must match the **unit type** in Wialon. A "Rinho
+     IPS" unit on Wialon Hosting listens on 22500; **20332 is the generic "Wialon IPS" type and
+     rejects a Rinho IPS unit**.
+   - Protocol changed recently with reports queued (`QBU` > 0 and not draining): the queued
+     reports were built for the old protocol and block delivery. Fix is `>CBU<` + `>SDLC<`
+     (actions that delete the pending reports: only with the user's ok; `SCXDLE` alone was not
+     enough).
+   - `>QWD<` shows the exact frame the device would send, to compare with what Wialon expects.
+     `>QUC00<` shows the template; it must start with `QWD0| ` and stay under ~212 characters.
+     The device speaks Wialon IPS 1.0.
 
 ## Reports arrive late or in bursts
 
