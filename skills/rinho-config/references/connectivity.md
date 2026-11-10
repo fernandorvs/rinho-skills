@@ -13,6 +13,16 @@ Source: public docs "Comando IP", "Comando CXIP", "Comando CXAPN"
 | `>SCXAPN host,user,password<` | APN of SIM0 (`SCXAP1` for SIM1). Reply `RCXAPN host,user,password` (password in clear: mask it) |
 | `>SCXAA1<` | Auto-APN (acts only when no APN is set) |
 
+**Wialon (TAIP or IPS)**: the full recipe is the application note "Rinho en Wialon"
+(https://docs.rinho.com.ar/notas-de-aplicacion/rinho-en-wialon, also under `/en/` and `/pt/`): device types and ports, what
+Wialon decodes from each frame, the `;AP=` block, event numbers, commands and troubleshooting. End
+every Wialon setup by telling the user to **import the WLP of their model** in Wialon (one file
+serves TAIP and Rinho IPS): https://docs.rinho.com.ar/descargas/wialon/rinho-zero-iot.wlp,
+rinho-spider-iot.wlp, rinho-smart-iot.wlp. They bring ignition (`in8`), voltage (`pwr_int`),
+backup battery (`adc2`, IPS only), inputs, outputs, signal (`cel_level`), event (`rep_num`) and, on
+Spider and Smart, 8 CAN sensors (`rpm`, `fuel_lvl`, `refr_temp`, `oil_press`, `odometer`,
+`trip_time`, `odoliter`, `acc`), plus two query commands (`QVR`, `QCQ`).
+
 Typical "platform changed server" fix: one line, `>SIP0"new.host",port<` (and `SIP1` if they give a
 second host). Same protocol → nothing else; the reports queued on the device drain to the new
 server by themselves. Protocol change (`SCXIP`) → the Rinho recipes also send `>SCXDLE<`, which
@@ -61,3 +71,4 @@ Checked on Wialon Hosting with a Zero and a Spider on 1.09.28.T63 (November 2026
 - Troubleshooting "Wialon shows nothing": `QWL` first (empty = silent login failure), then
   `QIP0`/`QCXIP` against the unit type's host, port and protocol, then `QBU`/`QDL` (see the
   `rinho-diagnostics` skill).
+- Finish by importing the WLP of the model (links above): it is the same file for TAIP and IPS.

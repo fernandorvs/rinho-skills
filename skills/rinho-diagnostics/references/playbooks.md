@@ -58,6 +58,19 @@ Response formats are in `commands.md`.
      `>QUC00<` shows the template; it must start with `QWD0| ` and stay under ~212 characters.
      The device speaks Wialon IPS 1.0.
 
+## A parameter or sensor is missing in Wialon (position arrives, a field doesn't)
+
+`>QWD<` `>QUC00<` `>QCXIP<`
+- What Wialon decodes from each frame family (TAIP CQ/BQ/ER/EQ/HQ/HV/CV and IPS), with the
+  parameter names, is the table in section 4 of the application note "Rinho en Wialon":
+  https://docs.rinho.com.ar/notas-de-aplicacion/rinho-en-wialon. Compare the frame from `QWD` with it.
+- The unit needs the WLP of its model imported (https://docs.rinho.com.ar/descargas/wialon/,
+  files rinho-zero-iot.wlp, rinho-spider-iot.wlp, rinho-smart-iot.wlp; one file for TAIP and IPS):
+  it maps `in8` ignition, `pwr_int`, `adc2` (IPS only), `cel_level`, `rep_num` and the CAN sensors.
+- CAN fields (`rpm`, `fuel_lvl`, …) arrive as 0 without a CAN bus (Spider/Smart) and never on Zero.
+- In IPS the template (`QUC00`) decides which parameters travel; `'CHN'` is not resolved and `'OT'`
+  is in metres. Event ids with letters make Wialon drop `rep_num`.
+
 ## Reports arrive late or in bursts
 
 `>QBU<` `>QDL<` `>QCEL<` `>QCXDL<`

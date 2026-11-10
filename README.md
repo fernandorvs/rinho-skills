@@ -8,8 +8,8 @@ configurator** at [config.rinho.com.ar](https://config.rinho.com.ar).
 
 | Skill | Version | What it does |
 |---|---|---|
-| `rinho-config` | 1.6.3 | Turns a request ("buzzer above 110 km/h for 10 s") into a validated block of commands to paste into the configurator's Code mode. 31 tested recipes, every public command with its syntax and minimum firmware. |
-| `rinho-diagnostics` | 1.5.3 | Troubleshoots a device (not reporting, no GPS, inputs, outputs, battery, BLE) with read-only query commands and playbooks by symptom. |
+| `rinho-config` | 1.6.4 | Turns a request ("buzzer above 110 km/h for 10 s") into a validated block of commands to paste into the configurator's Code mode. 31 tested recipes, every public command with its syntax and minimum firmware. |
+| `rinho-diagnostics` | 1.5.4 | Troubleshoots a device (not reporting, no GPS, inputs, outputs, battery, BLE) with read-only query commands and playbooks by symptom. |
 | `rinho-zones` | 1.5.0 | Builds the mass-geofence file (`zones.bin`, up to 4096 shapes) from a CSV, KML or KMZ, explains how to load it, and writes the enter/leave rules. |
 
 The skills produce text you review and send from the configurator. They write to a device only
