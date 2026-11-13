@@ -8,9 +8,9 @@ configurator** at [config.rinho.com.ar](https://config.rinho.com.ar).
 
 | Skill | Version | What it does |
 |---|---|---|
-| `rinho-config` | 1.6.4 | Turns a request ("buzzer above 110 km/h for 10 s") into a validated block of commands to paste into the configurator's Code mode. 31 tested recipes, every public command with its syntax and minimum firmware. |
-| `rinho-diagnostics` | 1.5.5 | Troubleshoots a device (not reporting, no GPS, inputs, outputs, battery, BLE) with read-only query commands and playbooks by symptom. |
-| `rinho-zones` | 1.5.0 | Builds the mass-geofence file (`zones.bin`, up to 4096 shapes) from a CSV, KML or KMZ, explains how to load it, and writes the enter/leave rules. |
+| `rinho-config` | 1.6.5 | Turns a request ("buzzer above 110 km/h for 10 s") into a validated block of commands to paste into the configurator's Code mode. 31 tested recipes, every public command with its syntax and minimum firmware. |
+| `rinho-diagnostics` | 1.5.6 | Troubleshoots a device (not reporting, no GPS, inputs, outputs, battery, BLE) with read-only query commands and playbooks by symptom. |
+| `rinho-zones` | 1.5.1 | Builds the mass-geofence file (`zones.bin`, up to 4096 shapes) from a CSV, KML or KMZ, explains how to load it, and writes the enter/leave rules. |
 
 The skills produce text you review and send from the configurator. They write to a device only
 when you explicitly ask them to, with the device on your PC's USB and the port you name, through
@@ -53,6 +53,14 @@ It is generated from the Rinho configurator on every release and **pull requests
 merged**: report problems or ideas at https://www.rinho.com.ar/contacto/ or in an issue, and the
 fix ships from the source. The skills check `https://config.rinho.com.ar/skills/version.json`
 once per conversation and tell you when a newer version exists; they never update themselves.
+
+## License
+
+[Apache License 2.0](LICENSE). Free to use, copy, modify and redistribute. "Rinho" and the Rinho
+logo are trademarks of Rinho Telematics and are not licensed (see [NOTICE](NOTICE)).
+
+Provided as is, without warranty: validate on the device before relying on a configuration,
+especially anything that drives outputs (engine cut, sirens).
 
 ## Links
 

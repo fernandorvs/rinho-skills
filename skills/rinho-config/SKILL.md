@@ -1,9 +1,9 @@
 ---
 name: rinho-config
 description: Use when configuring Rinho GPS trackers (Zero IoT, Spider IoT, Smart IoT) - writing or fixing rules (SRL), timers, speed limits, outputs, alarms, reports or any >S...< command block, pointing the device to a platform or server (Wialon over TAIP or Wialon IPS, Traccar/GPSWOX, APN, SIP/SCXIP), explaining an existing Rinho configuration, or fixing an import error in the Code mode of config.rinho.com.ar. Also for Spanish/Portuguese requests like "configurar equipo Rinho", "armar una regla", "corte de motor", "exceso de velocidad", "ralentí", "botón de pánico", "conectar a Wialon", "configurar servidor", "configurar rastreador", "bloqueio", "conectar ao Wialon".
-license: Proprietary. Free to use for configuring Rinho devices.
+license: Apache-2.0
 metadata:
-  version: "1.6.4"
+  version: "1.6.5"
   author: Rinho Telematics
   homepage: https://config.rinho.com.ar/skills/index.html
 ---
@@ -231,7 +231,7 @@ TD03 (10 min); when it expires, send report CQ00 and go to low power".
 
 ## Version check
 
-This skill is version 1.6.4. Once per conversation, if you can fetch URLs, GET
+This skill is version 1.6.5. Once per conversation, if you can fetch URLs, GET
 https://config.rinho.com.ar/skills/version.json and compare `skills["rinho-config"].version`.
 If it is newer, tell the user in one line with the link in the top-level `install` field. If the fetch fails,
 continue silently. Never download or replace skill files yourself.
