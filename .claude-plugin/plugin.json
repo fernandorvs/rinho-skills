@@ -9,6 +9,9 @@
   },
   "homepage": "https://config.rinho.com.ar/skills/index.html",
   "repository": "https://github.com/fernandorvs/rinho-skills",
+  "documentationUrl": "https://docs.rinho.com.ar/en",
+  "supportUrl": "https://www.rinho.com.ar/en/contact/",
+  "privacyPolicyUrl": "https://www.rinho.com.ar/en/privacy-policy/",
   "license": "Apache-2.0",
   "keywords": [
     "rinho",
